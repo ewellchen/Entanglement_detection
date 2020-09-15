@@ -10,8 +10,7 @@ This is a implementation of the entanglement detection by unsupervised learning.
 
 In a compuer with `GeForce GTX 1080` GPU, the ROC of 2-qubit is shown below.
 
-![ROC-10](/Users/yiwei/Desktop/Entanglement_Detection v3/Entanglement_Detection v3/2p_hist_13/ROC-10.png)
-
+![image](https://github.com/ewellchen/Entanglement_detection/image/ROC-2qubit)
 ## Prerequisite
 
 The main requirements can be intalled by:
