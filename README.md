@@ -1,6 +1,6 @@
 # Entanglement Detection by unsupervised neural newtrok
 
-A Pytorch implementation of the quantum state entanglement detection by unsupervised neural network.
+A Pytorch implementation of the quantum state entanglement detection by learning
 
 ## Introduction
 
