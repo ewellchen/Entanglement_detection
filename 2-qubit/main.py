@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """Train the model"""
 from __future__ import absolute_import
 from __future__ import division
@@ -13,6 +16,7 @@ from generate_data import Generate_separable_state, Generate_entangled_state
 from tools import mkdir, l1_loss, l2_loss_real, l2_loss_complex, roc
 from model import Encoder_r, Encoder_f, Generator, Discriminator
 from torch.utils.data import Dataset
+
 
 # from loss import l1_loss,l2_loss
 
@@ -32,6 +36,7 @@ class MyDataset(Dataset):
         sample = {'states': states}
         return sample
 
+
 def train(model, optimizer, device, train_loader, epoch):
     for mod in model:
         mod.train()
@@ -45,11 +50,11 @@ def train(model, optimizer, device, train_loader, epoch):
         mix_separable_states_i = mix_separable_states[:, :, :, :, 1]
         for opt in optimizer:
             opt.zero_grad()
-        [latent_var1_r, latent_var1_i] = encoder1(mix_separable_states_r,mix_separable_states_i)
-        [fake_mix_states_r,fake_mix_states_i] = decoder(latent_var1_r, latent_var1_i)
-        [latent_var2_r, latent_var2_i] = encoder2(fake_mix_states_r,fake_mix_states_i)
-        dis_out_real = dis(mix_separable_states_r,mix_separable_states_i)
-        dis_out_fake = dis(fake_mix_states_r,fake_mix_states_i)
+        [latent_var1_r, latent_var1_i] = encoder1(mix_separable_states_r, mix_separable_states_i)
+        [fake_mix_states_r, fake_mix_states_i] = decoder(latent_var1_r, latent_var1_i)
+        [latent_var2_r, latent_var2_i] = encoder2(fake_mix_states_r, fake_mix_states_i)
+        dis_out_real = dis(mix_separable_states_r, mix_separable_states_i)
+        dis_out_fake = dis(fake_mix_states_r, fake_mix_states_i)
 
         a = 20
         lossadv_g = torch.mean(-dis_out_fake)
@@ -89,6 +94,7 @@ def train(model, optimizer, device, train_loader, epoch):
                 Loss.item())
             )
 
+
 def test(model, testloader, device):
     for mod in model:
         mod.eval()
@@ -112,32 +118,36 @@ def test(model, testloader, device):
             [latent_var1_r, latent_var1_i] = encoder1(mix_separable_states_r, mix_separable_states_i)
             [fake_mix_states_r, fake_mix_states_i] = decoder(latent_var1_r, latent_var1_i)
             if flag == 0:
-                latent_vector = torch.cat((latent_var1_r,latent_var1_i),dim = 1).cpu()
+                latent_vector = torch.cat((latent_var1_r, latent_var1_i), dim=1).cpu()
                 flag = 1
             [latent_var2_r, latent_var2_i] = encoder2(fake_mix_states_r, fake_mix_states_i)
-            loss_enc = l2_loss_complex([latent_var1_r, latent_var1_i], [latent_var2_r, latent_var2_i],test = True).cpu()
+            loss_enc = l2_loss_complex([latent_var1_r, latent_var1_i], [latent_var2_r, latent_var2_i], test=True).cpu()
             Loss.append(loss_enc)
             # time_end = time.time()
             # time_s = time_s + time_end - time_start
         # print('time cost', time_s, 's')
-        return Loss,latent_vector
+        return Loss, latent_vector
 
     # print('Accuracy:%f %%' % (100*correct/total))
+
+
 if __name__ == '__main__':
-    #generate data
+    # generate data
     train_size, test_size = TRAIN_CONFIG['train_size'], TRAIN_CONFIG['test_size']
     if TRAIN_CONFIG['generate_data']:
-        Generate_separable_state(name='sep_train_set', size=train_size, sub_dim=2, space_number=2, mix_number=20).generate()
-        Generate_separable_state(name='sep_test_set', size=test_size, sub_dim=2, space_number=2, mix_number=20).generate()
+        Generate_separable_state(name='sep_train_set', size=train_size, sub_dim=2, space_number=2,
+                                 mix_number=20).generate()
+        Generate_separable_state(name='sep_test_set', size=test_size, sub_dim=2, space_number=2,
+                                 mix_number=20).generate()
         Generate_entangled_state(name='ent_test_set', size=test_size, dim=4).generate()
 
     train_data = np.load(TRAIN_CONFIG['train_set_path'])
     test_data_s = np.load(TRAIN_CONFIG['s_test_set_path'])
     test_data_e = np.load(TRAIN_CONFIG['e_test_set_path'])
 
-    train_set = MyDataset(nam='train',set=train_data)
-    test_set_s = MyDataset(nam='test_separable',set=test_data_s)
-    test_set_e = MyDataset(nam='test_entangled',set=test_data_e)
+    train_set = MyDataset(nam='train', set=train_data)
+    test_set_s = MyDataset(nam='test_separable', set=test_data_s)
+    test_set_e = MyDataset(nam='test_entangled', set=test_data_e)
 
     batch_size_t = TRAIN_CONFIG['train_config']['batch_size']
     batch_size_v = TRAIN_CONFIG['validation_data_config']['batch_size']
@@ -151,18 +161,20 @@ if __name__ == '__main__':
         AUC = []
         EER = []
         device = TRAIN_CONFIG['train_config']['device']
-        c1, k1, c2, k2, d1 = MODEL_CONFIG['c1'], MODEL_CONFIG['k1'], MODEL_CONFIG['c2'], MODEL_CONFIG['k2'], MODEL_CONFIG['d1']
-        model_1 = Encoder_r(k1=k1,c1=c1,k2=k2,c2=c2,d1=d1).to(device)
+        c1, k1, c2, k2, d1 = MODEL_CONFIG['c1'], MODEL_CONFIG['k1'], MODEL_CONFIG['c2'], MODEL_CONFIG['k2'], \
+                             MODEL_CONFIG['d1']
+        model_1 = Encoder_r(k1=k1, c1=c1, k2=k2, c2=c2, d1=d1).to(device)
         optimizer_1 = torch.optim.RMSprop(model_1.parameters(), lr=0.0001, momentum=0.9)
-        model_2 = Generator(k1=k1,c1=c1,k2=k2,c2=c2,d1=d1).to(device)
+        model_2 = Generator(k1=k1, c1=c1, k2=k2, c2=c2, d1=d1).to(device)
         optimizer_2 = torch.optim.RMSprop(model_2.parameters(), lr=0.0001, momentum=0.9)
-        model_3 = Discriminator(k1=k1,c1=c1,k2=k2,c2=c2,d1=d1).to(device)
+        model_3 = Discriminator(k1=k1, c1=c1, k2=k2, c2=c2, d1=d1).to(device)
         optimizer_3 = torch.optim.RMSprop(model_3.parameters(), lr=0.0001, momentum=0.9)
-        model_4 = Encoder_f(k1=k1,c1=c1,k2=k2,c2=c2,d1=d1).to(device)
+        model_4 = Encoder_f(k1=k1, c1=c1, k2=k2, c2=c2, d1=d1).to(device)
         optimizer_4 = torch.optim.RMSprop(model_4.parameters(), lr=0.0001, momentum=0.9)
-        mkdir('./Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d'%(c1,c2))
+        mkdir('./Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d' % (c1, c2))
         for epoch in range(TRAIN_CONFIG['train_config']['epoch']):
-            train([model_1, model_2, model_3, model_4], [optimizer_1, optimizer_2, optimizer_3, optimizer_4], device, train_loader,
+            train([model_1, model_2, model_3, model_4], [optimizer_1, optimizer_2, optimizer_3, optimizer_4], device,
+                  train_loader,
                   epoch)
             loss_s, latent_s = test([model_1, model_2, model_3, model_4], test_loader_s, device)
             Loss_s = []
@@ -188,14 +200,14 @@ if __name__ == '__main__':
             AUC.append(roc_auc)
             EER.append(eer)
             if roc_auc >= np.max(np.array(AUC)):
-                torch.save(model_1, './Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d/'%(c1,c2) + 'model1')
-                torch.save(model_2, './Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d/'%(c1,c2) + 'model2')
-                torch.save(model_3, './Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d/'%(c1,c2) + 'model3')
-                torch.save(model_4, './Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d/'%(c1,c2) + 'model4')
+                torch.save(model_1, './Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d/' % (c1, c2) + 'model1')
+                torch.save(model_2, './Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d/' % (c1, c2) + 'model2')
+                torch.save(model_3, './Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d/' % (c1, c2) + 'model3')
+                torch.save(model_4, './Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d/' % (c1, c2) + 'model4')
             # test(model, test_loader,device)
         Performance = np.array([AUC, EER])
         Pd_data = pd.DataFrame(Performance.T, columns=["AUC", "EER"])
-        file_writer.write('results of %d-%d kernel'%(k1,k2) + str(c1) + '-' + str(c2) + '\n')
+        file_writer.write('results of %d-%d kernel' % (k1, k2) + str(c1) + '-' + str(c2) + '\n')
         file_writer.write('AUC:' + str(Pd_data.Auc.max()) + '\n')
         file_writer.write('EER:' + str(Pd_data.Err.min()) + '\n')
         file_writer.write('_________________________\n')
@@ -207,10 +219,10 @@ if __name__ == '__main__':
         device = TRAIN_CONFIG['validation_data_config']['device']
         c1, k1, c2, k2, d1 = MODEL_CONFIG['c1'], MODEL_CONFIG['k1'], MODEL_CONFIG['c2'], MODEL_CONFIG['k2'], \
                              MODEL_CONFIG['d1']
-        model_1 = torch.load('./Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d'%(c1,c2) + 'model1')
-        model_2 = torch.load('./Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d'%(c1,c2) + 'model2')
-        model_3 = torch.load('./Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d'%(c1,c2) + 'model3')
-        model_4 = torch.load('./Model_%d_%d/'%(k1,k2) + 'Channel_%d_%d'%(c1,c2) + 'model4')
+        model_1 = torch.load('./Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d' % (c1, c2) + 'model1')
+        model_2 = torch.load('./Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d' % (c1, c2) + 'model2')
+        model_3 = torch.load('./Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d' % (c1, c2) + 'model3')
+        model_4 = torch.load('./Model_%d_%d/' % (k1, k2) + 'Channel_%d_%d' % (c1, c2) + 'model4')
 
         loss_s, latent_s = test([model_1, model_2, model_3, model_4], test_loader_s, device)
         Loss_s = []

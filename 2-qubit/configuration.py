@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Default configurations of model configuration, training.
@@ -21,7 +22,7 @@ MODEL_CONFIG = {
 TRAIN_CONFIG = {
     'is_train' : True,
 
-    'generate_data' : False,
+    'generate_data' : True,
 
     'train_size' : 160000,
 
@@ -37,10 +38,10 @@ TRAIN_CONFIG = {
 
     'train_config': {  'epoch': 100,
                         'batch_size': 1024,
-                        'device': 'cuda:0', },
+                        'device': 'cpu', },
 
-    'validation_data_config': { 'batch_size': 2000,
-                                'device': 'cuda:0', },
+    'validation_data_config': { 'batch_size': 10000,
+                                'device': 'cpu', },
 
 
 }
