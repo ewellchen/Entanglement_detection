@@ -17,6 +17,7 @@ In a compuer with `GeForce GTX 1080` GPU, the ROC of 2-qubit is shown below.
 The main requirements can be intalled by:
 
 ```
+cd 2-qubit
 pip install -re requirements.txt
 ```
 
