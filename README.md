@@ -1,14 +1,13 @@
 # Entanglement Detection by unsupervised neural newtrok
 
-A Pytorch implementation of the quantum state entanglement detection by learning
+A Pytorch implementation of paper.
 
 ## Introduction
 
-This is a implementation of the entanglement detection by unsupervised learning. 
+This is the implementation of detecting quantum entanglement via unsupervised learning. 
 
 ## Main Results
-
-In a compuer with `GeForce GTX 1080` GPU, the ROC of 2-qubit is shown below.
+The ROC of 2-qubit is shown below.
 
 ![image](https://github.com/ewellchen/Entanglement_detection/tree/master/image/ROC-20.png)
 
