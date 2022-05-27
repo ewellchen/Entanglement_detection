@@ -29,11 +29,18 @@ MIT License
 If you find our work useful in your research, please consider citing:
 
 ```
-@article{chen2021detecting,
-  title={Detecting quantum entanglement with unsupervised learning},
-  author={Chen, Yiwei and Pan, Yu and Zhang, Guofeng and Cheng, Shuming},
-  journal={arXiv preprint arXiv:2103.04804},
-  year={2021}
+@article{Chen_2021,
+	doi = {10.1088/2058-9565/ac310f},
+	url = {https://doi.org/10.1088/2058-9565/ac310f},
+	year = 2021,
+	month = {nov},
+	publisher = {{IOP} Publishing},
+	volume = {7},
+	number = {1},
+	pages = {015005},
+	author = {Yiwei Chen and Yu Pan and Guofeng Zhang and Shuming Cheng},
+	title = {Detecting quantum entanglement with unsupervised learning},
+	journal = {Quantum Science and Technology},
 }
 ```
 
