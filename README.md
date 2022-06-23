@@ -7,14 +7,9 @@ Quantum properties, such as entanglement and coherence, are indispensable resour
 
 ## Prerequisite
 
-The main requirements can be intalled by:
+Pytorch == 1.1.0
 
-```
-cd 2-qubit
-pip install -re requirements.txt
-```
-
-## Training
+## 2-qubit Training and Testing
 
 ```
 cd 2-qubit
