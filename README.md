@@ -7,7 +7,7 @@ Quantum properties, such as entanglement and coherence, are indispensable resour
 
 ## Prerequisite
 
-Pytorch == 1.1.0
+Pytorch >= 1.1.0
 
 ## 2-qubit Training and Testing
 
